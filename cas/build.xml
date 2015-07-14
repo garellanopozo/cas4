@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="CAS 4.0.2-server Module">
+
+	<property name="maven_version" value="1.3.0.RC1" />
+	<property name="jboss_cluster" value="cluster_security" />
+	<property name="jboss_hostname" value="10.10.2.136" />
+	<property name="webapp_artifact_name" value="cas4-webapp" />
+	<property name="soa_artifact_name" value="cas4-soa" />
+
+	<condition property="mvn.executable" value="mvn.bat" else="mvn">
+		<os family="windows" />
+	</condition>
+
+	<target name="mvn_clean">
+		<echo message="Cleaning CAS 4.0.2 server - Module..." />
+		<exec executable="${mvn.executable}">
+			<arg line="clean" />
+		</exec>
+	</target>
+
+	<target name="mvn_package">
+		<echo message="Building CAS 4.0.2 Module..." />
+		<exec executable="${mvn.executable}">
+			<arg line="clean package" />
+		</exec>
+	</target>
+
+	<target name="mvn_package_without_test">
+		<echo message="Building CAS 4.0.2 Module without running test..." />
+		<exec executable="${mvn.executable}">
+			<arg line="clean package -U -DskipTests" />
+		</exec>
+	</target>
+
+	<target name="mvn_install">
+		<echo message="Installing cas-server Module..." />
+		<exec executable="${mvn.executable}">
+			<arg line="clean install" />
+		</exec>
+	</target>
+
+	<target name="mvn_install_without_test">
+		<echo message="Installing CAS 4.0.2 Module without running test..." />
+		<exec executable="${mvn.executable}">
+			<arg line="clean install -DskipTests" />
+		</exec>
+	</target>
+
+	<target name="mvn_test">
+		<echo message="Running test..." />
+		<exec executable="${mvn.executable}">
+			<arg line="clean test" />
+		</exec>
+	</target>
+
+	<target name="mvn_set_new_version">
+		<echo message="Set version..." />
+		<exec executable="${mvn.executable}">
+			<arg line="versions:set -DnewVersion=${maven_version} -DgenerateBackupPoms=false" />
+		</exec>
+	</target>
+
+	<target name="deploy_webapp_jboss">
+		<exec dir="${webapp_artifact_name}" executable="${mvn.executable}">
+			<arg line="jboss-as:deploy -Dhostname=${jboss_hostname} -Dport=9999 -Dversion=7.1 -Dserver.group=${jboss_cluster} -DskipTests" />
+		</exec>
+	</target>
+
+	<target name="deploy_soa_jboss">
+		<exec dir="${soa_artifact_name}" executable="${mvn.executable}">
+			<arg line="jboss-as:deploy -Dhostname=${jboss_hostname} -Dport=9999 -Dversion=7.1 -Dserver.group=${jboss_cluster} -DskipTests" />
+		</exec>
+	</target>
+
+</project>
